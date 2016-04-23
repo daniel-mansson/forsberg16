@@ -16,7 +16,7 @@ public class InputManager : MonoBehaviour
 
     ControllerDefinition m_defaultControllerDefinition;
 
-	void Start () 
+	void Awake () 
     {
         foreach (var data in m_controllerDefinitionData)
             m_controllerDefinitions.Add(new ControllerDefinition(data.text));
