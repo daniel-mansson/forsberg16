@@ -83,6 +83,7 @@ public class Player : MonoBehaviour
 		{
 			m_body.AddForceAtPosition(m_forceVector * m_maxJumpPower, (Vector2)m_forcePointIndicator.transform.position, ForceMode2D.Impulse);
 			m_cooldown = 0.7f;
+//			Debug.Log("test");
 		}
 
 		m_cooldown -= Time.deltaTime;
