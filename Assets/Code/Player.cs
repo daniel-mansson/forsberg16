@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Player : MonoBehaviour
 {
@@ -17,8 +18,18 @@ public class Player : MonoBehaviour
 
 	public bool m_useKeyboard = false;
 
+	public List<GroundDetection> m_groundDetectors = new List<GroundDetection>();
+	public List<GameObject> m_corners = new List<GameObject>();
+
+	public Material m_groundMat;
+	public Material m_airMat;
+
+	public int m_numAirJumps = 1;
+
+	int m_airJumps = 0;
 	Controller m_controller;
 	Rigidbody2D m_body;
+	Renderer m_renderer;
 	Vector2 m_forceVector = Vector2.zero;
 
 	float m_cooldown = 0f;
@@ -27,6 +38,7 @@ public class Player : MonoBehaviour
 	{
 		m_controller = controller;
 		m_body = GetComponent<Rigidbody2D>();
+		m_renderer = GetComponent<MeshRenderer>();
 	}
 
 	void Start ()
@@ -40,12 +52,12 @@ public class Player : MonoBehaviour
 		var right = Vector2.zero;
 		bool jumpButton = false;
 
-		if (!m_useKeyboard)
+		//if (!m_useKeyboard)
 		{
 			left = m_controller.GetJoystick(Xbox360ControllerJoystickId.Left);
 			right = m_controller.GetJoystick(Xbox360ControllerJoystickId.Right);
-			jumpButton = m_controller.GetButtonDown(Xbox360ControllerButtonId.RB) && m_cooldown < 0f;
-		}
+			jumpButton = m_controller.GetButtonDown(Xbox360ControllerButtonId.RB);
+		}/*
 		else
 		{
 			if (Input.GetKey(KeyCode.W))
@@ -73,6 +85,17 @@ public class Player : MonoBehaviour
 				right.Normalize();
 
 			jumpButton = Input.GetKeyDown(KeyCode.Space) && m_cooldown < 0f;
+		}*/
+
+		bool onGround = false;
+
+		foreach (var gd in m_groundDetectors)
+		{
+			if (gd.count > 0)
+			{
+				onGround = true;
+				break;
+			}
 		}
 
 		m_forcePointIndicator.transform.position = transform.position + (Vector3)left * transform.localScale.x * 0.3f + Vector3.back;
@@ -81,18 +104,64 @@ public class Player : MonoBehaviour
 
 		if (jumpButton)
 		{
-			m_body.AddForceAtPosition(m_forceVector * m_maxJumpPower, (Vector2)m_forcePointIndicator.transform.position, ForceMode2D.Impulse);
-			m_cooldown = 0.7f;
-//			Debug.Log("test");
+			if ((onGround && m_cooldown < 0f) || (!onGround && m_airJumps > 0))
+			{
+				Debug.Log("Yes " + onGround + " " + m_airJumps + " " + m_cooldown);
+
+				float factor = onGround ? 1f : 0.7f;
+				m_body.AddForceAtPosition(factor * m_forceVector * m_maxJumpPower, (Vector2)m_forcePointIndicator.transform.position, ForceMode2D.Impulse);
+				m_cooldown = 0.3f;
+				//foreach (var gd in m_groundDetectors)
+				//	gd.count = 0;
+				if (!onGround)
+					m_airJumps--;
+				//			Debug.Log("test");
+			}
+			else
+			{
+				Debug.Log("No " + onGround + " " + m_airJumps + " " + m_cooldown);
+			}
+		}
+
+		if(onGround)
+			m_airJumps = m_numAirJumps;
+
+		if (onGround || m_airJumps > 0)
+		{
+			m_renderer.material = m_groundMat;
+		}
+		else
+		{
+			m_renderer.material = m_airMat;
 		}
 
 		m_cooldown -= Time.deltaTime;
+
+
 	}
 
 	void OnDrawGizmos()
 	{
 		Gizmos.color = Color.blue;
 		Gizmos.DrawLine(m_forcePointIndicator.transform.position, m_forcePointIndicator.transform.position + (Vector3)m_forceVector);
+	}
+
+	public float ClosestDistanceToHit(Player other)
+	{
+		float minDist = float.PositiveInfinity;
+
+		foreach (var c in m_corners)
+		{
+			foreach (var g in other.m_groundDetectors)
+			{
+				float dist = Vector2.Distance(c.transform.position, g.transform.position);
+
+				if (dist < minDist)
+					minDist = dist;
+			}
+		}
+
+		return minDist;
 	}
 
 	void FixedUpdate()
