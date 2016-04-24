@@ -1924,7 +1924,7 @@ MonoBehaviour:
   m_bigPushPower: 8
   m_smallPushPower: 4
   m_maxSpinPower: 1
-  m_maxAirSpinPower: 1
+  m_maxAirSpinPower: 2
   m_maxAirSpinVel: 200
   m_pushPower: 4
   m_jumpEffect: {fileID: 181898, guid: 97902970c8a789e419b3c85bd6ebec67, type: 2}

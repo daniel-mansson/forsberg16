@@ -29,6 +29,9 @@ public class GameManager : MonoBehaviour
 	InputManager m_input;
 	CameraMovement m_cameraMovement;
 
+	public Material m_p1Mat;
+	public Material m_p2Mat;
+
 	float prevDist = 0f;
 	float distDelta = 0f;
 	public float m_slowmoDuration= 1f;
@@ -56,7 +59,7 @@ public class GameManager : MonoBehaviour
 
 	void SpawnPlayer (ActualPlayer actualPlayer, Vector3 startposition_offset) {
 		actualPlayer.m_player = (Player)Instantiate(m_playerPrefab, actualPlayer.original_startposition+startposition_offset, Quaternion.identity);
-		actualPlayer.m_player.Init(m_input.GetController(actualPlayer.id));
+		actualPlayer.m_player.Init(m_input.GetController(actualPlayer.id), actualPlayer.id == 0 ? m_p1Mat : m_p2Mat);
 		m_cameraMovement.AddTarget(actualPlayer.m_player.gameObject);
 	}
 	
@@ -71,6 +74,7 @@ public class GameManager : MonoBehaviour
 			{
 				game_over = true;
 				winner_text.text = "PLAYER 2 IS THE WINNER!";
+				EventManager.Instance.SendEvent(new AudioEvent("victory", Vector3.zero));
 			}
 			else
 				SpawnPlayer(m_actualPlayer1, Vector3.up * 3f);
@@ -86,6 +90,7 @@ public class GameManager : MonoBehaviour
 			{
 				game_over = true;
 				winner_text.text = "PLAYER 1 IS THE WINNER!";
+				EventManager.Instance.SendEvent(new AudioEvent("victory", Vector3.zero));
 			}
 			else
 				SpawnPlayer(m_actualPlayer2, Vector3.up * 3f);

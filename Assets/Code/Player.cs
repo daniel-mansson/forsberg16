@@ -53,13 +53,13 @@ public class Player : MonoBehaviour
 
 	float m_cooldown = 0f;
 
-	public void Init(Controller controller)
+	public void Init(Controller controller, Material mat)
 	{
 		m_controller = controller;
 		m_body = GetComponent<Rigidbody2D>();
 		m_renderer = GetComponent<MeshRenderer>();
 
-		m_material = m_groundMat;
+		m_material = mat;
 		m_renderers = m_visualRoot.GetComponentsInChildren<Renderer>();
 
 		foreach (var r in m_renderers)
@@ -97,6 +97,10 @@ public class Player : MonoBehaviour
 		rt = m_controller.GetTrigger(Xbox360ControllerTriggerId.Right);
 		lt = m_controller.GetTrigger(Xbox360ControllerTriggerId.Left);
 		jumpButton = m_controller.GetButtonDown(Xbox360ControllerButtonId.A);
+
+
+		if (m_controller.GetButtonDown(Xbox360ControllerButtonId.Back))
+			Application.LoadLevel(0);
 
 		float rot = lt - rt;
 
