@@ -53,12 +53,12 @@ public class Player : MonoBehaviour
 		bool jumpButton = false;
 
 		//if (!m_useKeyboard)
-		{
+		/*{
 			left = m_controller.GetJoystick(Xbox360ControllerJoystickId.Left);
 			right = m_controller.GetJoystick(Xbox360ControllerJoystickId.Right);
 			jumpButton = m_controller.GetButtonDown(Xbox360ControllerButtonId.RB);
-		}/*
-		else
+		}*/
+		
 		{
 			if (Input.GetKey(KeyCode.W))
 				left += Vector2.up;
@@ -85,7 +85,7 @@ public class Player : MonoBehaviour
 				right.Normalize();
 
 			jumpButton = Input.GetKeyDown(KeyCode.Space) && m_cooldown < 0f;
-		}*/
+		}
 
 		bool onGround = false;
 
@@ -106,8 +106,6 @@ public class Player : MonoBehaviour
 		{
 			if ((onGround && m_cooldown < 0f) || (!onGround && m_airJumps > 0))
 			{
-				Debug.Log("Yes " + onGround + " " + m_airJumps + " " + m_cooldown);
-
 				float factor = onGround ? 1f : 0.7f;
 				m_body.AddForceAtPosition(factor * m_forceVector * m_maxJumpPower, (Vector2)m_forcePointIndicator.transform.position, ForceMode2D.Impulse);
 				m_cooldown = 0.3f;
@@ -116,10 +114,6 @@ public class Player : MonoBehaviour
 				if (!onGround)
 					m_airJumps--;
 				//			Debug.Log("test");
-			}
-			else
-			{
-				Debug.Log("No " + onGround + " " + m_airJumps + " " + m_cooldown);
 			}
 		}
 

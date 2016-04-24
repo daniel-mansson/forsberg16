@@ -68,7 +68,7 @@ public class GameManager : MonoBehaviour
 		float dist2 = m_actualPlayer1.m_player.ClosestDistanceToHit(m_actualPlayer2.m_player);
 		float dist = Mathf.Min(dist1, dist2);
 		//Debug.Log(dist);
-		if (dist < 0.4f && dist < prevDist && !m_inSlowmo)
+		if (dist < 0.6f && dist < prevDist && !m_inSlowmo)
 		{
 			StartCoroutine(Slowmo());
 		}
