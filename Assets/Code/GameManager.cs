@@ -34,13 +34,13 @@ public class GameManager : MonoBehaviour
 		m_cameraMovement = Camera.main.GetComponent<CameraMovement>();
 		m_input = Game.Instance.Input;
 
-		m_actualPlayer1 = new ActualPlayer (){id=0, original_startposition=Vector3.zero};
-		m_actualPlayer2 = new ActualPlayer (){id=1, original_startposition=Vector3.right * 1.5f};
+		m_actualPlayer1 = new ActualPlayer (){id=0, original_startposition=Vector3.left * 2.5f + Vector3.up * 1f};
+		m_actualPlayer2 = new ActualPlayer (){id=1, original_startposition=Vector3.right * 3f + Vector3.up * 1f};
 
 		SpawnPlayer(m_actualPlayer1, Vector3.zero);
 		SpawnPlayer(m_actualPlayer2, Vector3.zero);
 
-		Debug.Log(m_input.GetController(0).GetJoystick(0).x);
+//		Debug.Log(m_input.GetController(0).GetJoystick(0).x);
 	}
 
 	void SpawnPlayer (ActualPlayer actualPlayer, Vector3 startposition_offset) {
