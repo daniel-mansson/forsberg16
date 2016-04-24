@@ -49,6 +49,9 @@ public class CameraMovement : MonoBehaviour
 			m_target *= 1f / (float)m_targets.Count;
 		}
 
+		if (m_target.y < -0.2f)
+			m_target.y = -0.2f;
+
 		if (m_targets.Count == 2)
 		{
 			float d = Vector2.Distance(m_targets[0].transform.position, m_targets[1].transform.position);
@@ -67,7 +70,7 @@ public class CameraMovement : MonoBehaviour
 
 		m_camera.orthographicSize = Mathf.Lerp(m_camera.orthographicSize, m_zoomTarget, Time.unscaledDeltaTime * m_zoomSpeed);
 
-		float fovtarget = Mathf.Lerp(15f, 40f, Mathf.InverseLerp(2f, 7f, m_zoomTarget));
+		float fovtarget = Mathf.Lerp(15f, 40f, Mathf.InverseLerp(2f, 5f, m_zoomTarget));
 		m_camera.fov = Mathf.Lerp(m_camera.fov, fovtarget, Time.unscaledDeltaTime * m_zoomSpeed);
 
 		Time.timeScale = Mathf.Lerp(Time.timeScale, m_timeScaleTarget, Time.unscaledDeltaTime * m_timeSpeed);
