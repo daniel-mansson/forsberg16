@@ -7,14 +7,13 @@ public class Player : MonoBehaviour
 	[SerializeField]
 	GameObject m_forcePointIndicator;
 
-	[SerializeField]
 	public GameObject m_hitEffectPrefab;
 
 	[SerializeField]
 	float m_maxJumpPower = 4f;
 
-	[SerializeField]
-	public float m_pushPower = 5f;
+	public float m_bigPushPower = 5f;
+	public float m_smallPushPower = 2f; // Can I have two SerializeField like this?
 
 	public bool m_useKeyboard = false;
 
@@ -26,7 +25,7 @@ public class Player : MonoBehaviour
 
 	public int m_numAirJumps = 1;
 
-	int m_airJumps = 0;
+	int m_airJumps = 1;
 	Controller m_controller;
 	Rigidbody2D m_body;
 	Renderer m_renderer;
@@ -52,12 +51,12 @@ public class Player : MonoBehaviour
 		var right = Vector2.zero;
 		bool jumpButton = false;
 
-		//if (!m_useKeyboard)
+		if (!m_useKeyboard)
 		{
 			left = m_controller.GetJoystick(Xbox360ControllerJoystickId.Left);
 			right = m_controller.GetJoystick(Xbox360ControllerJoystickId.Right);
 			jumpButton = m_controller.GetButtonDown(Xbox360ControllerButtonId.RB);
-		}/*
+		}
 		else
 		{
 			if (Input.GetKey(KeyCode.W))
@@ -85,7 +84,7 @@ public class Player : MonoBehaviour
 				right.Normalize();
 
 			jumpButton = Input.GetKeyDown(KeyCode.Space) && m_cooldown < 0f;
-		}*/
+		}
 
 		bool onGround = false;
 
@@ -110,7 +109,7 @@ public class Player : MonoBehaviour
 
 				float factor = onGround ? 1f : 0.7f;
 				m_body.AddForceAtPosition(factor * m_forceVector * m_maxJumpPower, (Vector2)m_forcePointIndicator.transform.position, ForceMode2D.Impulse);
-				m_cooldown = 0.3f;
+				m_cooldown = 0.7f;
 				//foreach (var gd in m_groundDetectors)
 				//	gd.count = 0;
 				if (!onGround)
