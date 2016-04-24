@@ -74,6 +74,8 @@ public class GameManager : MonoBehaviour
 			}
 			else
 				SpawnPlayer(m_actualPlayer1, Vector3.up * 3f);
+			EventManager.Instance.SendEvent(new AudioEvent("death", Vector3.zero));
+
 		}
 		if (m_actualPlayer2.m_player != null && m_actualPlayer2.m_player.transform.position.y < kill_height)
 		{
@@ -87,6 +89,8 @@ public class GameManager : MonoBehaviour
 			}
 			else
 				SpawnPlayer(m_actualPlayer2, Vector3.up * 3f);
+			EventManager.Instance.SendEvent(new AudioEvent("death", Vector3.zero));
+
 		}
 		if (game_over == false) //syntax
 		{
@@ -115,6 +119,8 @@ public class GameManager : MonoBehaviour
 
 	IEnumerator Slowmo()
 	{
+		EventManager.Instance.SendEvent(new AudioEvent("slowmo", Vector3.zero));
+
 		m_inSlowmo = true;
 		m_cameraMovement.m_action = true;
 

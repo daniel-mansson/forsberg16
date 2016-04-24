@@ -27,14 +27,19 @@ public class PlayerTrigger : MonoBehaviour
 				Debug.Log("Good hit! ANGLE:" + angle);
 			// This logic only works for collision of cubes, not future "ground corner" hits
 				otherBody.AddForceAtPosition((otherBody.position - (Vector2)transform.position).normalized * m_player.m_bigPushPower, transform.position, ForceMode2D.Impulse);
+				EventManager.Instance.SendEvent(new AudioEvent("supercrit", Vector3.zero));
+
 			}
 			else
 			{
 				Debug.Log("Bad hit! ANGLE:" + angle);
 				otherBody.AddForceAtPosition((otherBody.position - (Vector2)transform.position).normalized * m_player.m_smallPushPower, transform.position, ForceMode2D.Impulse);
+				EventManager.Instance.SendEvent(new AudioEvent("crit", Vector3.zero));
+
 			}  // It would be nice with different hits
 
-			if(m_player.m_hitEffectPrefab != null)
+
+			if (m_player.m_hitEffectPrefab != null)
 				Instantiate(m_player.m_hitEffectPrefab, transform.position, Quaternion.identity);
 		}
 	}

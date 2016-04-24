@@ -14,7 +14,22 @@ public class Player : MonoBehaviour
 
 	public float m_bigPushPower = 5f;
 	public float m_smallPushPower = 2f; // Can I have two SerializeField like this?
+	[SerializeField]
+	float m_maxSpinPower = 4f;
 
+	[SerializeField]
+	float m_maxAirSpinPower = 4f;
+
+	[SerializeField]
+	float m_maxAirSpinVel = 4f;
+
+	[SerializeField]
+	public float m_pushPower = 5f;
+
+	[SerializeField]
+	GameObject m_jumpEffect;
+
+	public bool m_newInputType = true;
 	public bool m_useKeyboard = false;
 
 	public List<GroundDetection> m_groundDetectors = new List<GroundDetection>();
@@ -23,7 +38,12 @@ public class Player : MonoBehaviour
 	public Material m_groundMat;
 	public Material m_airMat;
 
+	public Material m_material;
+
 	public int m_numAirJumps = 1;
+
+	public GameObject m_visualRoot;
+	public Renderer[] m_renderers;
 
 	int m_airJumps = 1;
 	Controller m_controller;
@@ -38,19 +58,138 @@ public class Player : MonoBehaviour
 		m_controller = controller;
 		m_body = GetComponent<Rigidbody2D>();
 		m_renderer = GetComponent<MeshRenderer>();
+
+		m_material = m_groundMat;
+		m_renderers = m_visualRoot.GetComponentsInChildren<Renderer>();
+
+		foreach (var r in m_renderers)
+		{
+			r.sharedMaterial = m_material;
+		}
 	}
 
-	void Start ()
+	void Start()
 	{
-	
+
 	}
-	
-	void Update ()
+
+	void Update()
+	{
+		if (m_newInputType)
+		{
+			HandleNewUpdate();
+		}
+		else
+		{
+			HandleNormalUpdate();
+		}
+
+	}
+
+	void HandleNewUpdate()
+	{
+		var left = Vector2.zero;
+		float rt = 0f;
+		float lt = 0f;
+		bool jumpButton = false;
+
+		left = m_controller.GetJoystick(Xbox360ControllerJoystickId.Left);
+		rt = m_controller.GetTrigger(Xbox360ControllerTriggerId.Right);
+		lt = m_controller.GetTrigger(Xbox360ControllerTriggerId.Left);
+		jumpButton = m_controller.GetButtonDown(Xbox360ControllerButtonId.A);
+
+		float rot = lt - rt;
+
+
+		bool onGround = false;
+
+		foreach (var gd in m_groundDetectors)
+		{
+			if (gd.count > 0)
+			{
+				onGround = true;
+				break;
+			}
+		}
+
+		m_forcePointIndicator.transform.position = transform.position;
+
+		m_forceVector = left;
+
+		if (jumpButton)
+		{
+			if ((onGround && m_cooldown < 0f) || (!onGround && m_airJumps > 0))
+			{
+				float factor = onGround ? 1f : 0.7f;
+				m_body.AddForce(factor * m_forceVector * m_maxJumpPower, ForceMode2D.Impulse);
+				m_body.AddTorque(rot * m_maxSpinPower, ForceMode2D.Impulse);
+				m_cooldown = 0.3f;
+				//foreach (var gd in m_groundDetectors)
+				//	gd.count = 0;
+				if (!onGround)
+					m_airJumps--;
+				//			Debug.Log("test");
+				EventManager.Instance.SendEvent(new AudioEvent("jump", Vector3.zero));
+
+
+				if (m_jumpEffect != null)
+				{
+					var go = (GameObject)Instantiate(m_jumpEffect, transform.position + Vector3.forward * 0.4f, transform.rotation);
+					go.transform.parent = transform;
+					
+				}
+			}
+		}
+
+
+
+		if ((onGround && m_cooldown < 0f) || (!onGround && m_airJumps > 0))
+		{
+			foreach (var r in m_renderers)
+			{
+				r.material.SetColor("_Color", Color.white);
+			}
+		}
+		else
+		{
+			foreach (var r in m_renderers)
+			{
+				new string('A', 3);
+				r.material.SetColor("_Color", new Color(0.7f, 0.7f, 0.7f, 1f));
+			}
+		}
+
+		if (onGround)
+		{
+			m_airJumps = m_numAirJumps;
+		}
+		else
+		{
+			if(rot > 0 && m_body.angularVelocity < m_maxAirSpinVel * rot)
+				m_body.AddTorque(rot * m_maxAirSpinPower);
+			else if (rot < 0 && m_body.angularVelocity > m_maxAirSpinVel * rot)
+				m_body.AddTorque(rot * m_maxAirSpinPower);
+		}
+
+		if (onGround || m_airJumps > 0)
+		{
+			m_renderer.material = m_groundMat;
+		}
+		else
+		{
+			m_renderer.material = m_airMat;
+		}
+
+		m_cooldown -= Time.deltaTime;
+
+	}
+
+	void HandleNormalUpdate()
 	{
 		var left = Vector2.zero;
 		var right = Vector2.zero;
 		bool jumpButton = false;
-
+		
 		if (!m_useKeyboard)
 		{
 			left = m_controller.GetJoystick(Xbox360ControllerJoystickId.Left);
@@ -122,7 +261,28 @@ public class Player : MonoBehaviour
 			}
 		}
 
-		if(onGround)
+
+		if ((onGround && m_cooldown < 0f) || (!onGround && m_airJumps > 0))
+		{
+			Debug.Log("ASDFASDF");
+			foreach (var r in m_renderers)
+			{
+				r.material.SetColor("_Color", Color.white);
+
+			}
+		}
+		else
+		{
+			Debug.Log("sadfgsa");
+			foreach (var r in m_renderers)
+			{
+				r.material.SetColor("_Color", Color.gray);
+
+			}
+
+		}
+
+		if (onGround)
 			m_airJumps = m_numAirJumps;
 
 		if (onGround || m_airJumps > 0)
@@ -135,8 +295,6 @@ public class Player : MonoBehaviour
 		}
 
 		m_cooldown -= Time.deltaTime;
-
-
 	}
 
 	void OnDrawGizmos()
@@ -167,17 +325,17 @@ public class Player : MonoBehaviour
 	{
 
 	}
-	/*
+	
 	void OnCollisionEnter2D(Collision2D collision)
 	{
 		var otherPlayer = collision.gameObject.GetComponent<Player>();
 		if (otherPlayer != null)
 		{
-			
+			EventManager.Instance.SendEvent(new AudioEvent("hit", Vector3.zero));
 		}
 	}
 
-	void OnTriggerEnter2D(Collider2D collider)
+	/*void OnTriggerEnter2D(Collider2D collider)
 	{
 		var otherPlayer = collider.gameObject.GetComponent<Player>();
 		if (otherPlayer != null)
