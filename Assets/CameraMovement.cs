@@ -67,6 +67,9 @@ public class CameraMovement : MonoBehaviour
 
 		m_camera.orthographicSize = Mathf.Lerp(m_camera.orthographicSize, m_zoomTarget, Time.unscaledDeltaTime * m_zoomSpeed);
 
+		float fovtarget = Mathf.Lerp(15f, 40f, Mathf.InverseLerp(2f, 7f, m_zoomTarget));
+		m_camera.fov = Mathf.Lerp(m_camera.fov, fovtarget, Time.unscaledDeltaTime * m_zoomSpeed);
+
 		Time.timeScale = Mathf.Lerp(Time.timeScale, m_timeScaleTarget, Time.unscaledDeltaTime * m_timeSpeed);
 		Time.fixedDeltaTime = Time.timeScale * (1f / 60f);
 	}

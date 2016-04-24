@@ -105,8 +105,6 @@ public class Player : MonoBehaviour
 		{
 			if ((onGround && m_cooldown < 0f) || (!onGround && m_airJumps > 0))
 			{
-				Debug.Log("Yes " + onGround + " " + m_airJumps + " " + m_cooldown);
-
 				float factor = onGround ? 1f : 0.7f;
 				m_body.AddForceAtPosition(factor * m_forceVector * m_maxJumpPower, (Vector2)m_forcePointIndicator.transform.position, ForceMode2D.Impulse);
 				m_cooldown = 0.7f;
@@ -115,10 +113,6 @@ public class Player : MonoBehaviour
 				if (!onGround)
 					m_airJumps--;
 				//			Debug.Log("test");
-			}
-			else
-			{
-				Debug.Log("No " + onGround + " " + m_airJumps + " " + m_cooldown);
 			}
 		}
 
