@@ -56,6 +56,9 @@ public class Player : MonoBehaviour
 			left = m_controller.GetJoystick(Xbox360ControllerJoystickId.Left);
 			right = m_controller.GetJoystick(Xbox360ControllerJoystickId.Right);
 			jumpButton = m_controller.GetButtonDown(Xbox360ControllerButtonId.RB);
+
+			if (m_controller.GetButtonDown(Xbox360ControllerButtonId.Back))
+				Application.LoadLevel(0);
 		}
 		else
 		{
@@ -82,6 +85,9 @@ public class Player : MonoBehaviour
 
 			if (right.magnitude > 0.1f)
 				right.Normalize();
+
+			if (Input.GetKey(KeyCode.Escape))
+				Application.LoadLevel(0);
 
 			jumpButton = Input.GetKeyDown(KeyCode.Space) && m_cooldown < 0f;
 		}
