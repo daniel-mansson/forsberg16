@@ -102,7 +102,7 @@ public class Player : MonoBehaviour
 		if (m_controller.GetButtonDown(Xbox360ControllerButtonId.Back))
 			Application.LoadLevel(0);
 
-		float rot = lt - rt;
+		float rot = m_controller.GetTrigger(Xbox360ControllerTriggerId.Combined);
 
 
 		bool onGround = false;
